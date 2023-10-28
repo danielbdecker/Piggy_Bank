@@ -36,12 +36,11 @@ st.write(f"Current Balance: ${balance:.2f}")
 st.header("Deposit Money")
 deposit_date = st.date_input(
     "Deposit Date", datetime.date.today())  # Unique key
-deposit_amount = st.number_input(
-    "Deposit Amount", min_value=0.01)    # Unique key
-deposit_label = st.text_input(
-    "Label (optional)")                     # Unique key
+# Use float for min_value and step
+deposit_amount = st.number_input("Deposit Amount", min_value=0.01, step=0.01)
+deposit_label = st.text_input("Label (optional)")  # Unique key
 if st.button("Deposit"):
-    balance += deposit_amount
+    balance += deposit_amount  # Update the balance with the deposit amount
     transaction_history = transaction_history.append({"Type": "Deposit", "Date": deposit_date,
                                                       "Amount": deposit_amount, "Label/Reason": deposit_label},
                                                      ignore_index=True)
@@ -50,15 +49,17 @@ if st.button("Deposit"):
 st.header("Withdraw Money")
 withdraw_date = st.date_input(
     "Withdraw Date", datetime.date.today())  # Unique key
-withdraw_amount = st.number_input(
-    "Withdraw Amount", min_value=0.01, max_value=balance)  # Unique key
-withdraw_reason = st.text_input(
-    "Reason")                                # Unique key
+# Use float for min_value and step
+withdraw_amount = st.number_input("Withdraw Amount", min_value=0.01, step=0.01)
+withdraw_reason = st.text_input("Reason")  # Unique key
 if st.button("Withdraw"):
-    balance -= withdraw_amount
-    transaction_history = transaction_history.append({"Type": "Withdrawal", "Date": withdraw_date,
-                                                      "Amount": -withdraw_amount, "Label/Reason": withdraw_reason},
-                                                     ignore_index=True)
+    if withdraw_amount <= balance:
+        balance -= withdraw_amount  # Update the balance by subtracting the withdrawal amount
+        transaction_history = transaction_history.append({"Type": "Withdrawal", "Date": withdraw_date,
+                                                          "Amount": -withdraw_amount, "Label/Reason": withdraw_reason},
+                                                         ignore_index=True)
+    else:
+        st.warning("Withdrawal amount exceeds current balance.")
 
 # Transaction History Page
 st.header("Transaction History")
@@ -66,5 +67,3 @@ st.dataframe(transaction_history)
 
 # Save the transaction history to a CSV file (optional)
 transaction_history.to_csv("piggy_bank_transactions.csv", index=False)
-
-# You can run this app using: streamlit run piggy_bank_app.py
