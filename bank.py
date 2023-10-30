@@ -45,7 +45,7 @@ with col2:
     deposit_label = st.text_input("Label (optional)")  # Unique key
     if st.button("Deposit"):
         balance += deposit_amount  # Update the balance with the deposit amount
-        transaction_history = transaction_history.append({"Type": "Deposit", "Date": deposit_date,
+        transaction_history = transaction_history.concat({"Type": "Deposit", "Date": deposit_date,
                                                           "Amount": deposit_amount, "Label/Reason": deposit_label},
                                                          ignore_index=True)
 
@@ -60,7 +60,7 @@ with col2:
     if st.button("Withdraw"):
         if withdraw_amount <= balance:
             balance -= withdraw_amount  # Update the balance by subtracting the withdrawal amount
-            transaction_history = transaction_history.append({"Type": "Withdrawal", "Date": withdraw_date,
+            transaction_history = transaction_history.concat({"Type": "Withdrawal", "Date": withdraw_date,
                                                               "Amount": -withdraw_amount, "Label/Reason": withdraw_reason},
                                                              ignore_index=True)
         else:
